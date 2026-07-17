@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eskin Group • Коммерческое предложение</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@700&display=swap');
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    .heading { font-family: 'Playfair Display', Georgia, serif; }
+    .gold { color: #c9a227; }
+  </style>
+</head>
+<body class="bg-[#0f172a] text-slate-200">
+
+  <!-- Navbar -->
+  <nav class="border-b border-white/10 bg-[#0f172a]/95 backdrop-blur-lg sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <div class="w-10 h-10 bg-[#c9a227] rounded-2xl flex items-center justify-center">
+          <span class="text-[#0f172a] font-bold text-3xl tracking-tighter">E</span>
+        </div>
+        <div>
+          <div class="font-semibold text-2xl tracking-tight">Eskin Group</div>
+          <div class="text-xs text-[#c9a227] -mt-1 tracking-[2px]">MDF • ДСП • КРОМКА</div>
+        </div>
+      </div>
+      <button onclick="generateProformaPDF()" 
+              class="px-8 py-3 bg-[#c9a227] hover:bg-[#d4af37] text-[#0f172a] font-semibold rounded-2xl flex items-center gap-3 transition-all text-sm">
+        <i class="fa-solid fa-file-pdf"></i>
+        <span>Сформировать Proforma PDF</span>
+      </button>
+    </div>
+  </nav>
+
+  <div class="max-w-7xl mx-auto px-6 pt-10 pb-16">
+
+    <!-- Intro -->
+    <div class="max-w-2xl mb-10">
+      <div class="inline-flex items-center gap-2 text-sm px-4 py-1 rounded-full border border-white/20 mb-4">
+        <span class="text-[#c9a227]">●</span> 
+        <span>Современный инструмент для клиентов</span>
+      </div>
+      <h1 class="heading text-6xl tracking-tight text-white leading-none">МДФ, ДСП и кромка<br>премиум-качества</h1>
+      <p class="mt-4 text-xl text-slate-400">Сформируйте коммерческое предложение за 1 минуту</p>
+    </div>
+
+    <div class="grid lg:grid-cols-12 gap-8">
+      
+      <!-- Buyer -->
+      <div class="lg:col-span-5 bg-[#1e2937] border border-white/10 rounded-3xl p-8">
+        <h3 class="font-semibold text-lg mb-6">Информация о клиенте</h3>
+        <div class="space-y-5">
+          <div>
+            <label class="text-sm text-slate-400">Компания / Имя клиента</label>
+            <input id="buyerName" value="ООО «Альфа Мебель»" class="mt-1.5 w-full bg-[#0f172a] border border-white/10 rounded-2xl px-5 py-3">
+          </div>
+          <div>
+            <label class="text-sm text-slate-400">Адрес доставки</label>
+            <input id="buyerAddress" value="г. Москва, ул. Мебельная, д. 12" class="mt-1.5 w-full bg-[#0f172a] border border-white/10 rounded-2xl px-5 py-3">
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="text-sm text-slate-400">Дата</label>
+              <input id="date" type="date" value="2026-07-17" class="mt-1.5 w-full bg-[#0f172a] border border-white/10 rounded-2xl px-5 py-3">
+            </div>
+            <div>
+              <label class="text-sm text-slate-400">Номер предложения</label>
+              <input id="proposalNo" value="EG-2026-0717-01" class="mt-1.5 w-full bg-[#0f172a] border border-white/10 rounded-2xl px-5 py-3">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary -->
+      <div class="lg:col-span-7 bg-[#1e2937] border border-white/10 rounded-3xl p-8 flex flex-col justify-between">
+        <div>
+          <div class="text-sm text-slate-400">ИТОГО К ОПЛАТЕ</div>
+          <div class="flex items-baseline gap-2 mt-1">
+            <span id="grandTotal" class="text-7xl font-semibold tabular-nums tracking-tighter">0</span>
+            <span class="text-3xl text-[#c9a227]">EUR</span>
+          </div>
+        </div>
+        
+        <div class="mt-6 text-sm flex gap-8 text-slate-400">
+          <div>Позиций: <span id="itemCount" class="font-medium text-white">0</span></div>
+          <div>Всего метров кромки: <span id="totalMeters" class="font-medium text-white">0</span></div>
+        </div>
+      </div>
+
+      <!-- Catalog -->
+      <div class="lg:col-span-12">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-semibold text-xl">Выберите продукцию</h3>
+          <button onclick="addCustomProduct()" class="text-sm flex items-center gap-2 px-4 py-2 border border-white/20 rounded-2xl hover:bg-white/5">
+            <i class="fa-solid fa-plus"></i> <span>Добавить свою позицию</span>
+          </button>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4" id="catalog"></div>
+      </div>
+
+      <!-- Quote Table -->
+      <div class="lg:col-span-12">
+        <h3 class="font-semibold text-xl mb-4">Ваше коммерческое предложение</h3>
+        <div class="bg-[#1e2937] border border-white/10 rounded-3xl overflow-hidden">
+          <table class="w-full text-sm">
+            <thead class="bg-[#0f172a]">
+              <tr class="text-left text-slate-400">
+                <th class="px-6 py-4 font-normal">Продукция</th>
+                <th class="px-6 py-4 font-normal">Код</th>
+                <th class="px-6 py-4 font-normal w-32">Количество</th>
+                <th class="px-6 py-4 font-normal text-right">Цена, EUR</th>
+                <th class="px-6 py-4 font-normal text-right">Сумма, EUR</th>
+                <th class="w-10"></th>
+              </tr>
+            </thead>
+            <tbody id="quoteBody" class="divide-y divide-white/10"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // Catalog (хороший набор для примера)
+    const catalog = [
+      { id: 1, name: "Кромка ПВХ 0.4 мм", code: "PVC-0.4-SON", price: 0.0534, unit: "м" },
+      { id: 2, name: "Кромка ПВХ 1 мм", code: "PVC-1.0-WEN", price: 0.1068, unit: "м" },
+      { id: 3, name: "Кромка ПВХ 2 мм", code: "PVC-2.0-OAK", price: 0.1942, unit: "м" },
+      { id: 4, name: "Кромка ПВХ GOLD CRAFT", code: "PVC-GOLD-22", price: 0.1420, unit: "м" },
+      { id: 5, name: "Кромка ПВХ WHITE CRAFT", code: "PVC-WHT-22", price: 0.0890, unit: "м" },
+      { id: 6, name: "МДФ плита 18 мм", code: "MDF-18-2800", price: 12.80, unit: "лист" },
+      { id: 7, name: "ДСП плита 16 мм", code: "DSP-16-2800", price: 9.40, unit: "лист" },
+      { id: 8, name: "Кромка ПВХ PATIK", code: "PVC-PAT-22", price: 0.1180, unit: "м" },
+    ];
+
+    let quote = [];
+
+    function initCatalog() {
+      const container = document.getElementById('catalog');
+      container.innerHTML = '';
+
+      catalog.forEach(item => {
+        const card = document.createElement('div');
+        card.className = `bg-[#1e2937] border border-white/10 hover:border-[#c9a227]/50 rounded-3xl p-5 cursor-pointer transition-all`;
+        card.innerHTML = `
+          <div class="flex justify-between">
+            <div>
+              <div class="font-semibold">${item.name}</div>
+              <div class="text-xs text-slate-400 font-mono mt-1">${item.code}</div>
+            </div>
+            <div class="text-right">
+              <div class="gold font-semibold">€${item.price}</div>
+              <div class="text-[10px] text-slate-400">/${item.unit}</div>
+            </div>
+          </div>
+        `;
+        card.onclick = () => addToQuote(item);
+        container.appendChild(card);
+      });
+    }
+
+    function addToQuote(product) {
+      const existing = quote.findIndex(i => i.id === product.id);
+      if (existing > -1) {
+        quote[existing].qty += (product.unit === "м" ? 10 : 1);
+      } else {
+        quote.push({ ...product, qty: product.unit === "м" ? 10 : 1 });
+      }
+      renderTable();
+      updateTotals();
+    }
+
+    function addCustomProduct() {
+      const name = prompt("Название продукции:");
+      if (!name) return;
+      const code = prompt("Код продукции:", "CUSTOM-001") || "CUSTOM";
+      const price = parseFloat(prompt("Цена за единицу (EUR):", "0.12")) || 0.12;
+      const unit = prompt("Единица (м / лист):", "м") || "м";
+      const qty = parseFloat(prompt("Количество:", "10")) || 10;
+
+      quote.push({ id: Date.now(), name, code, price, unit, qty });
+      renderTable();
+      updateTotals();
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('quoteBody');
+      tbody.innerHTML = '';
+
+      quote.forEach((item, index) => {
+        const sum = (item.qty * item.price).toFixed(2);
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td class="px-6 py-4 font-medium">${item.name}</td>
+          <td class="px-6 py-4 font-mono text-xs text-slate-400">${item.code}</td>
+          <td class="px-6 py-4">
+            <input type="number" value="${item.qty}" step="0.1" 
+                   class="w-24 bg-[#0f172a] border border-white/10 rounded-xl px-3 py-1 text-center"
+                   onchange="changeQty(${index}, this.value)">
+          </td>
+          <td class="px-6 py-4 text-right font-mono">€${item.price}</td>
+          <td class="px-6 py-4 text-right font-semibold">€${sum}</td>
+          <td class="px-4 py-4">
+            <button onclick="removeItem(${index})" class="text-red-400 hover:text-red-500"><i class="fa-solid fa-trash"></i></button>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function changeQty(index, value) {
+      quote[index].qty = parseFloat(value) || 0;
+      renderTable();
+      updateTotals();
+    }
+
+    function removeItem(index) {
+      quote.splice(index, 1);
+      renderTable();
+      updateTotals();
+    }
+
+    function updateTotals() {
+      let total = 0;
+      let meters = 0;
+
+      quote.forEach(item => {
+        total += item.qty * item.price;
+        if (item.unit === "м") meters += item.qty;
+      });
+
+      document.getElementById('grandTotal').innerText = total.toFixed(2);
+      document.getElementById('itemCount').innerText = quote.length;
+      document.getElementById('totalMeters').innerText = meters.toFixed(1);
+    }
+
+    // === ГЛАВНАЯ ФУНКЦИЯ — КРАСИВЫЙ СОВРЕМЕННЫЙ PDF ===
+    function generateProformaPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      const buyer = document.getElementById('buyerName').value;
+      const address = document.getElementById('buyerAddress').value;
+      const date = document.getElementById('date').value;
+      const number = document.getElementById('proposalNo').value;
+
+      // Шапка
+      doc.setFillColor(15, 23, 42);
+      doc.rect(0, 0, 210, 32, 'F');
+      doc.setTextColor(201, 162, 39);
+      doc.setFontSize(20);
+      doc.text("ESKIN GROUP", 20, 15);
+      doc.setFontSize(10);
+      doc.text("MDF • ДСП • КРОМКА ПВХ", 20, 22);
+
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(14);
+      doc.text("КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ", 130, 15);
+      doc.setFontSize(10);
+      doc.text(`№ ${number}`, 130, 22);
+      doc.text(`от ${date}`, 130, 28);
+
+      // Покупатель
+      doc.setTextColor(0);
+      doc.setFontSize(11);
+      doc.text("Кому:", 20, 48);
+      doc.setFontSize(13);
+      doc.text(buyer, 20, 55);
+      doc.setFontSize(10);
+      doc.text(address, 20, 61);
+
+      // Срок действия
+      doc.text("Срок действия предложения: 30 дней с даты выставления", 20, 70);
+
+      // Таблица
+      let y = 85;
+      doc.setFillColor(30, 41, 55);
+      doc.rect(15, y - 7, 180, 9, 'F');
+      doc.setTextColor(255);
+      doc.setFontSize(9);
+      doc.text("ПРОДУКЦИЯ", 18, y);
+      doc.text("КОД", 80, y);
+      doc.text("КОЛ-ВО", 120, y);
+      doc.text("ЦЕНА EUR", 148, y);
+      doc.text("СУММА EUR", 175, y);
+
+      y += 10;
+      doc.setTextColor(0);
+      doc.setFontSize(9);
+
+      let total = 0;
+
+      quote.forEach(item => {
+        const sum = (item.qty * item.price).toFixed(2);
+        total += parseFloat(sum);
+
+        if (y > 250) {
+          doc.addPage();
+          y = 30;
+        }
+
+        doc.text(item.name, 18, y);
+        doc.text(item.code, 80, y);
+        doc.text(String(item.qty), 123, y);
+        doc.text(item.price.toFixed(4), 151, y);
+        doc.text(sum, 178, y);
+        y += 8;
+      });
+
+      // Итог
+      y += 8;
+      doc.setFontSize(13);
+      doc.setFont(undefined, "bold");
+      doc.text(`ИТОГО К ОПЛАТЕ: €${total.toFixed(2)}`, 120, y);
+
+      // Контакты
+      y += 20;
+      doc.setFontSize(10);
+      doc.setFont(undefined, "normal");
+      doc.text("Контакты для связи:", 20, y);
+      y += 7;
+      doc.text("Telegram: @eskin_group   |   Email: info@eskin-group.com   |   Тел: +7 (999) 000-00-00", 20, y);
+
+      doc.save(`Eskin_Group_${number}.pdf`);
+    }
+
+    function init() {
+      initCatalog();
+
+      // Демо-данные
+      setTimeout(() => {
+        quote = [
+          { id: 1, name: "Кромка ПВХ 0.4 мм", code: "PVC-0.4-SON", price: 0.0534, qty: 45, unit: "м" },
+          { id: 2, name: "Кромка ПВХ 1 мм", code: "PVC-1.0-WEN", price: 0.1068, qty: 12, unit: "м" },
+          { id: 6, name: "МДФ плита 18 мм", code: "MDF-18-2800", price: 12.80, qty: 6, unit: "лист" },
+        ];
+        renderTable();
+        updateTotals();
+      }, 400);
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>
